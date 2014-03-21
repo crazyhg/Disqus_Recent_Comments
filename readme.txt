@@ -1,5 +1,5 @@
 === Disqus Recent Comments Widget ===
-Contributors: DeusMachineLLC,aaron.white,Andrew Bartel,RenettaRenula, spacedmonkey
+Contributors: DeusMachineLLC,aaron.white,Andrew Bartel,RenettaRenula,spacedmonkey
 Tags: disqus, comments, widget, sidebar
 Requires at least: 3.4.1
 Tested up to: 3.8.1
@@ -7,7 +7,7 @@ Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Disqus has dropped support for their recent comments widget.  This plugin ceates a configurable widget that will display your latest Disqus comments.
+Disqus has dropped support for their recent comments widget.  This plugin creates a configurable widget that will display your latest Disqus comments.
 
 == Description ==
 
@@ -27,10 +27,6 @@ You can follow development here: https://github.com/andrewbartel/Disqus_Recent_C
 4. If you're having trouble configuring the settings, please see http://deusmachine.com/disqus-instructions.php
 
 == Frequently Asked Questions ==
-
-= Hey what happened to the caching and custom layouts in this release? =
-
-Sorry, it was a really busy November and I wanted to push out a release that had bug fixes and a new layout at least.  I will get those added asap.  I'm also going to try and get that shortcode added as well.
 
 = Why did the comments stop appearing? =
 
@@ -58,18 +54,14 @@ Or, you can check out the script on github: https://github.com/AaronJWhite/Disqu
 
 Not currently, but if you'd like to put together a translation for us, please do!  We'll happily give you credit in the release notes.
 
-== Screenshots ==
-
-1. The Settings Page
-2. Adding the widget to a sidebar
-
 == Changelog ==
-
 
 = 1.1.2 =
 
+* Added spacedmonkey as a contributor
+* Removed the check for the disqus comments system on activation
 * Removed references to CURL and replaced with the built-in wp_get_remote function.
-* Fixed bug where admin panel was not accessible by admin accounts. 
+* Fixed bug where admin panel was not accessible by admin accounts.
 * New filter 'disqus_rcw_recent_comment_format' for changing the html markup of each comment
 
 = 1.1.1 =

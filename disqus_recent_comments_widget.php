@@ -12,12 +12,21 @@
 
 class disqus_recent_comments_widget extends WP_Widget {
 
+	/**
+	 * Get us going
+	 */
 	public function __construct() {
 		$widget_ops = array( 'classname' => 'disqus_recent_comments_widget_wrapper', 'description' => __( 'Display Recent Posts From Disqus' , 'disqus_rcw' ) );
 		$control_ops = array( 'width' => 300, 'height' => 230 );
 		parent::__construct( 'disqus_recent_comments', __( 'Disqus Recent Comments' , 'disqus_rcw' ), $widget_ops, $control_ops);
 	}
 
+	/**
+	 * Main widget function
+	 *
+	 * @param array $args
+	 * @param array $instance
+	 */
 	public function widget($args, $instance) {
 
 		try {
@@ -119,6 +128,13 @@ class disqus_recent_comments_widget extends WP_Widget {
 
 	}
 
+	/**
+	 * Enforce the comment length
+	 *
+	 * @param $comment
+	 * @param $comment_length
+	 * @return string
+	 */
 	protected function shorten_comment($comment, $comment_length) {
 		if($comment_length != 0) {
 			if(strlen($comment) > $comment_length) {
@@ -132,6 +148,16 @@ class disqus_recent_comments_widget extends WP_Widget {
 		return $comment;
 	}
 
+	/**
+	 * Make our request to disqus
+	 *
+	 * @param $thread_id
+	 * @param $api_key
+	 * @param string $api_version
+	 * @param string $resource
+	 * @param string $output_type
+	 * @return array
+	 */
 	protected function get_thread_info( $thread_id, $api_key, $api_version = "3.0", $resource = "threads/details", $output_type = "json" ) {
 		$dq_request ="http://disqus.com/api/".$api_version."/".$resource.".".$output_type;
 		$dq_parameter = array(
@@ -157,6 +183,13 @@ class disqus_recent_comments_widget extends WP_Widget {
 		}
 	}
 
+	/**
+	 * Create our request url
+	 *
+	 * @param $base_url
+	 * @param $parameters
+	 * @return string
+	 */
 	protected function add_query_str($base_url,$parameters) {
 		$i=0;
 		if (count($parameters) > 0) {
@@ -172,51 +205,62 @@ class disqus_recent_comments_widget extends WP_Widget {
 		else return $base_url;
 	}
 
-	/*
-		Get the start of the widget and the title.
-	*/
-
+	/**
+	 * Abstract out the start of the widget instance
+	 *
+	 * @param $style_params
+	 * @param bool $args
+	 * @return string
+	 */
 	protected function start( $style_params, $args = false ) {
 		$title = '';
-		// important
 		extract( $args );
 
 		$title_wrapper_final = str_replace( '{title}', $style_params[ 'title' ], $style_params[ 'title_wrapper' ] );
 
 		if ( $style_params[ 'markup_style' ] == 'classic'  ) {
-			$title .= '<div id="disqus_rcw_title">'.$before_title.$title_wrapper_final.$after_title.'</div>';
+			$title .= '<div id="disqus_rcw_title">'.$before_title . $title_wrapper_final . $after_title.'</div>';
 		} elseif ( $style_params[ 'markup_style' ] == 'html5' || $style_params['markup_style'] == 'nospacing' ) {
 			$title .= '<aside id="disqus_rcw_title" class="widget">';
-			$title .= $before_title.$title_wrapper_final.$after_title;
+			$title .= $before_title . $title_wrapper_final . $after_title;
 			$title .= '<ul class="disqus_rcw_comments_list">';
 		}
 
 		return $title;
 	}
 
-	/*
-		Get the end of the widget
-	*/
+	/**
+	 * Abstract out the end of the widget instance
+	 *
+	 * @param $style_params
+	 * @return string
+	 */
 	protected function end( $style_params ) {
 		$ends = '';
 
-		if( $style_params['markup_style'] == 'html5' || $style_params['markup_style'] == 'nospacing' ) 
+		if( $style_params['markup_style'] == 'html5' || $style_params['markup_style'] == 'nospacing' )
 			$ends .= '</ul></aside>';
 
 		return $ends;
 	}
 
-	// Added arguments $style_params and $args for the start() method
+	/**
+	 * Display a no coments message if none were found and/or the user has reached their hourly limit
+	 *
+	 * @param $style_params
+	 * @param bool $args
+	 * @param bool $comment
+	 */
 	protected function no_comments( $style_params, $args = false, $comment = false ) {
 		extract( $args );
 
 		$recent_comments = $before_widget;
-		
+
 		$recent_comments .= $this->start( $style_params, $args );
 		$recent_comments .= '<div id="disqus_rcw_comment_wrap"><span id="disqus_rcw_no_comments">No Recent Comments Found</span>';
-		
+
 		if( $comment === true ) echo '<!-- hourly limit reached -->';
-		
+
 		$recent_comments .= '</div>';
 		// in case HTML5 is chosen
 		$recent_comments .= $this->end( $style_params );
@@ -225,11 +269,14 @@ class disqus_recent_comments_widget extends WP_Widget {
 		echo $recent_comments;
 	}
 
+	/**
+	 * Get the comments from the disqus api
+	 */
 	protected function file_get_contents_curl( $url ) {
-		
+
 		// Use the build in WordPress CURL function
 		$request = wp_remote_get( $url, array( 'timeout' => 120, 'httpversion' => '1.1' ) );
-		
+
 		// If there is an error, return empty json.
 		if(is_wp_error($request)){
 			return '{}';
@@ -239,10 +286,24 @@ class disqus_recent_comments_widget extends WP_Widget {
 		return $data;
 	}
 
+	/**
+	 * Little helper function to use with array_walk
+	 *
+	 * @param $val
+	 */
 	public function disqus_rcw_trim(&$val) {
 		$val = trim($val);
 	}
 
+	/**
+	 * Actually echo out the comments
+	 *
+	 * @param $comment
+	 * @param $api_key
+	 * @param $style_params
+	 * @param bool $args
+	 * @return void
+	 */
 	protected function echo_comments($comment, $api_key, $style_params,$args=false) {
 
 		extract($args);
@@ -292,7 +353,7 @@ class disqus_recent_comments_widget extends WP_Widget {
 					$style_params["comment_length"]
 				);
 
-				
+
 				if($style_params['markup_style'] == 'classic') {
 					//create comment html
 					$comment_html_format = '<div class="disqus_rcw_single_comment_wrapper">
@@ -342,11 +403,11 @@ class disqus_recent_comments_widget extends WP_Widget {
 						on <time datetime="%4$s" class="disqus_rcw_post_time_nospacing">%4$s</time>
 					</li>';
 				}
-				
+
 				// Added new filter for the format / html of each comment
 				$comment_html_format = apply_filters( 'disqus_rcw_recent_comment_format' , $comment_html_format );
 				$comment_html = sprintf($comment_html_format, $author_avatar,$author_name,$author_profile,$post_time,$thread_link,$thread_title,$comment_id,$message);
-			
+
 
 				$recent_comments .= $comment_html;
 				//stop loop when we reach limit
@@ -362,9 +423,16 @@ class disqus_recent_comments_widget extends WP_Widget {
 
 		$recent_comments = apply_filters( 'disqus_rcw_recent_comments' , $recent_comments );
 
-		echo($recent_comments);
+		echo $recent_comments;
 	}
 
+	/**
+	 * Standard WP widget instance update
+	 *
+	 * @param array $new_instance
+	 * @param array $old_instance
+	 * @return array
+	 */
 	public function update($new_instance, $old_instance) {
 
 		$instance = $old_instance;
@@ -378,6 +446,11 @@ class disqus_recent_comments_widget extends WP_Widget {
 
 	}
 
+	/**
+	 * Standard WP widget instance form
+	 * @param array $instance
+	 * @return string|void
+	 */
 	public function form($instance) {
 
 		$comment_limit = isset($instance['comment_limit']) ? esc_attr($instance['comment_limit']) : 5;
@@ -412,7 +485,7 @@ add_action( 'widgets_init' , 'disqus_rcw_init' );
 function disqus_rcw_settings_link($links) {
 	// Only show settings link if you have access the panel
 	if ( current_user_can('manage_options') ) {
-		$settings_link = '<a href="'.admin_url('options-general.php?page=disqus_rcw').'">'.__('Settings').'</a>';
+		$settings_link = '<a href="' . admin_url('options-general.php?page=disqus_rcw') . '">' . __('Settings') . '</a>';
 		array_unshift($links, $settings_link);
 	}
 	return $links;
@@ -447,13 +520,7 @@ class disqus_rcw_settings {
 	}
 
 	public function install() {
-
-		if( !in_array( 'disqus-comment-system/disqus.php' , (array) get_option( 'active_plugins', array() ) ) && !is_multisite() )
-			wp_die('<p>This plugin requires the <a href="http://wordpress.org/extend/plugins/disqus-comment-system/">Disqus comment system plugin</a> to be installed and activated on your WordPress site</p><p><a href="plugins.php">Return to plugins page</a></p>');
-		else {
-			add_option( 'disqus_rcw_settings_do_activation_redirect' , true );
-		}
-
+		add_option( 'disqus_rcw_settings_do_activation_redirect' , true );
 	}
 
 	public function install_redirect() {
