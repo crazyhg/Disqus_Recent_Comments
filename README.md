@@ -1,23 +1,16 @@
-=== Disqus Recent Comments Widget ===
+# Disqus Recent Comments Widget
 
 Contributors: DeusMachineLLC,aaron.white,Andrew Bartel,RenettaRenula,spacedmonkey
-
 Tags: disqus, comments, widget, sidebar
-
 Requires at least: 3.4.1
-
 Tested up to: 3.8.1
-
 Stable tag: trunk
-
 License: GPLv2 or later
-
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
+Disqus has dropped support for their recent comments widget.  This plugin creates a configurable widget that will display your latest Disqus comments.
 
-Disqus has dropped support for their recent comments widget.  This plugin ceates a configurable widget that will display your latest Disqus comments.
-
-== Description ==
+## Description
 
 The Disqus Recent Comments Widget plugin will create a configurable widget that will allow you to display comments in any widgetized area of your theme like sidebars and footers.
 
@@ -27,68 +20,75 @@ We try to be very proactive and responsive with support.  So, if you have any is
 
 You can follow development here: https://github.com/andrewbartel/Disqus_Recent_Comments
 
-== Installation ==
+## Installation
 
 1. Unzip the ZIP file and drop the 'disqus-recent-comments' folder into your 'wp-content/plugins/' folder.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
 3. Enter your short name and api key in the settings page.
 4. If you're having trouble configuring the settings, please see http://deusmachine.com/disqus-instructions.php
 
-== Frequently Asked Questions ==
+## Frequently Asked Questions
 
-= Hey what happened to the caching and custom layouts in this release? =
+- How can I adjust the amount of time comments are cached for?
 
-Sorry, it was a really busy November and I wanted to push out a release that had bug fixes and a new layout at least.  I will get those added asap.
+The time is filterable.  Add this to your functions.php:
+	add_filter( 'disqus_rcw_cache_time', 'filter_disqus_caching_time', 10, 1 );
+	function filter_disqus_caching_time( $cache_time_in_seconds ) {
+		$cache_time_in_seconds = 60 // change this to the number of seconds you want to wait before requesting new comments from disqus
+		return $cache_time_in_seconds;
+	}
 
-= Why did the comments stop appearing? =
+- Why did the comments stop appearing?
 
-Disqus caps the number of requests you can make to their api at 1000 an hour for free accounts. Comments will start appearing again next hour.
+Disqus caps the number of requests you can make to their api at 1000 an hour for free accounts. Comments will start appearing again next hour.  Make sure you haven't disabled caching on the settings page as well.
 
-= I blocked a user, but their comments are still appearing =
+- I blocked a user, but their comments are still appearing
 
 Make sure you entered the exact author name. The plugin does its best to account for spaces, capitalization, etc but it can't read your mind. If all else fails, copy/paste their name into the filtered users field.
 
-= I can't figure out this API key stuff, help? =
+- I can't figure out this API key stuff, help?
 
 Please see this guide: http://deusmachine.com/disqus-instructions.php
 
-= I found a bug or I have an idea for a new feature =
+- I found a bug or I have an idea for a new feature
 
 Fork the project and send us a pull request! We'll be happy to give you a shout out in the release notes. https://github.com/andrewbartel/Disqus_Recent_Comments
 If you're not a developer, you can always drop us a line in the support forums and we'll do our best to integrate your requests into the next version or tackle the bug you found.
 
-= Where can I find the original version of the script that this plugin was based on? =
+- Where can I find the original version of the script that this plugin was based on?
 
 You can view the original blog post on Aaron's site: http://www.aaronjwhite.org/index.php/14-web-development/php/11-updated-recent-comments-widget-in-php-for-disquss-api
 Or, you can check out the script on github: https://github.com/AaronJWhite/Disqus_Recent_Comments
 
-= Is the plugin available in languages other than English? =
+- Is the plugin available in languages other than English?
 
 Not currently, but if you'd like to put together a translation for us, please do!  We'll happily give you credit in the release notes.
 
-== Screenshots ==
+## Changelog
 
-1. The Settings Page
-2. Adding the widget to a sidebar
+### 1.2
 
-== Changelog ==
+* Added the ability to use relative time (how long ago a comment was posted)
+* TODO: Condense options to one database row
+* Added caching for the comments
 
+### 1.1.2
 
-= 1.1.2 =
-
+* Added spacedmonkey as a contributor
+* Removed the check for the disqus comments system on activation
 * Removed references to CURL and replaced with the built-in wp_get_remote function.
-* Fixed bug where admin panel was not accessible by admin accounts. 
+* Fixed bug where admin panel was not accessible by admin accounts.
 * New filter 'disqus_rcw_recent_comment_format' for changing the html markup of each comment
 
-= 1.1.1 =
+### 1.1.1
 
 * Added RenettaRenula as a contributor
 * Plugin now properly displays the title when no comments are present
-* Plugin should now activate properly on multisite
+* Plugin should now activate properly on multisite (props to Army)
 * Added a new layout, Tight Spacing
-* Rewrote the connection to the disqus api to speed up the comments retrieval
+* Rewrote the connection to the disqus api to speed up the comment retrieval (props to theconsultant_)
 
-= 1.1 =
+### 1.1
 
 * Added support for register_sidebars()
 * Fixed a bug that caused the posted date to display as today's date
@@ -97,6 +97,6 @@ Not currently, but if you'd like to put together a translation for us, please do
 * Added the ability to change the widget title
 * Added the option to change the markup surrounding the title
 
-= 1.0 =
+### 1.0
 
 * Initial build
