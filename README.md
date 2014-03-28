@@ -32,11 +32,11 @@ You can follow development here: https://github.com/andrewbartel/Disqus_Recent_C
 - How can I adjust the amount of time comments are cached for?
 
 The time is filterable.  Add this to your functions.php:
-	add_filter( 'disqus_rcw_cache_time', 'filter_disqus_caching_time', 10, 1 );
-	function filter_disqus_caching_time( $cache_time_in_seconds ) {
-		$cache_time_in_seconds = 60 // change this to the number of seconds you want to wait before requesting new comments from disqus
-		return $cache_time_in_seconds;
-	}
+    add_filter( 'disqus_rcw_cache_time', 'filter_disqus_caching_time', 10, 1 );
+    function filter_disqus_caching_time( $cache_time_in_seconds ) {
+        $cache_time_in_seconds = 60 // change this to the number of seconds you want to wait before requesting new comments from disqus
+        return $cache_time_in_seconds;
+    }
 
 - Why did the comments stop appearing?
 
@@ -66,13 +66,13 @@ Not currently, but if you'd like to put together a translation for us, please do
 
 ## Changelog
 
-### 1.2
+#### 1.2
 
 * Added the ability to use relative time (how long ago a comment was posted)
 * TODO: Condense options to one database row
 * Added caching for the comments
 
-### 1.1.2
+#### 1.1.2
 
 * Added spacedmonkey as a contributor
 * Removed the check for the disqus comments system on activation
@@ -80,7 +80,7 @@ Not currently, but if you'd like to put together a translation for us, please do
 * Fixed bug where admin panel was not accessible by admin accounts.
 * New filter 'disqus_rcw_recent_comment_format' for changing the html markup of each comment
 
-### 1.1.1
+#### 1.1.1
 
 * Added RenettaRenula as a contributor
 * Plugin now properly displays the title when no comments are present
@@ -88,7 +88,7 @@ Not currently, but if you'd like to put together a translation for us, please do
 * Added a new layout, Tight Spacing
 * Rewrote the connection to the disqus api to speed up the comment retrieval (props to theconsultant_)
 
-### 1.1
+#### 1.1
 
 * Added support for register_sidebars()
 * Fixed a bug that caused the posted date to display as today's date
@@ -97,6 +97,6 @@ Not currently, but if you'd like to put together a translation for us, please do
 * Added the ability to change the widget title
 * Added the option to change the markup surrounding the title
 
-### 1.0
+#### 1.0
 
 * Initial build
