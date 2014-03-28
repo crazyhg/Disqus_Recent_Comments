@@ -29,15 +29,6 @@ You can follow development here: https://github.com/andrewbartel/Disqus_Recent_C
 
 ## Frequently Asked Questions
 
-- How can I adjust the amount of time comments are cached for?
-
-The time is filterable.  Add this to your functions.php:
-    add_filter( 'disqus_rcw_cache_time', 'filter_disqus_caching_time', 10, 1 );
-    function filter_disqus_caching_time( $cache_time_in_seconds ) {
-        $cache_time_in_seconds = 60 // change this to the number of seconds you want to wait before requesting new comments from disqus
-        return $cache_time_in_seconds;
-    }
-
 - Why did the comments stop appearing?
 
 Disqus caps the number of requests you can make to their api at 1000 an hour for free accounts. Comments will start appearing again next hour.  Make sure you haven't disabled caching on the settings page as well.
