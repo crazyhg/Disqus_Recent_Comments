@@ -3,7 +3,7 @@
  * Plugin Name: Disqus Recent Comments Widget
  * Description: Add a widget to display recent comments from disqus
  * Author: Deus Machine LLC
- * Version: 1.1.2
+ * Version: 1.2
  * Author URI: http://deusmachine.com
  * Ported to WordPress by: Andrew Bartel, web developer for Deus Machine
  * Original Methodology and Script by: Aaron J. White http://aaronjwhite.org/
