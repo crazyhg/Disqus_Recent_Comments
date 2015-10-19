@@ -415,10 +415,40 @@ class disqus_recent_comments_widget extends WP_Widget {
 					);
 				}
 
-				$thread_info = $this->get_thread_info(
-					$comment_obj["thread"],
-					$api_key
-				);
+				if( get_option('disqus_rcw_disable_caching') !== 1 ) {
+					if ( false === ( $threads_transient = get_transient( 'disqus_rcw_cache_threads' ) ) ) {
+						$threads_transient = array();
+					} else {
+						$threads_transient = maybe_unserialize($threads_transient);
+					}
+
+					if (isset($threads_info[$thread_id])) {
+						$thread_info = $threads_info[$thread_id];
+					} else {
+						$thread_info_full = $this->get_thread_info(
+							$comment_obj["thread"],
+							$api_key
+						);
+						$thread_info = array(
+							"title" => $thread_info_full["title"],
+							"link"  => $thread_info_full["link"]
+						);
+						$threads_transient[$thread_id] = $thread_info;
+
+						if ( false === ( $threads_timeout = get_transient( 'disqus_rcw_cache_threads_timeout' ) ) ) {
+							$ttl = 86400;
+							$threads_timeout = time() + $ttl;
+							set_transient( 'disqus_rcw_cache_threads_timeout', $threads_timeout, $ttl );
+						}
+						set_transient( 'disqus_rcw_cache_threads', serialize($threads_transient), $threads_timeout - time() );
+					}
+				} else {
+				    $thread_info = $this->get_thread_info(
+					    $comment_obj["thread"],
+					    $api_key
+				    );
+				}
+
 				$thread_title = $thread_info["title"];
 				$thread_link = $thread_info["link"];
 
