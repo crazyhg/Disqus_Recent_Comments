@@ -57,6 +57,12 @@ class disqus_recent_comments_widget extends WP_Widget {
 			$use_relative_time = $instance['relative_time'];
 			if( !$use_relative_time) $use_relative_time = 0;
 
+			$comment_limit_req = $instance['comment_limit_req'];
+			if(!$comment_limit_req) $comment_limit_req = 15;
+
+			$comments_per_thread = $instance['comments_per_thread'];
+			if(!$comments_per_thread) $comments_per_thread = 0;
+
 			$api_version = '3.0';
 
 			$resource = 'posts/list';
@@ -70,7 +76,8 @@ class disqus_recent_comments_widget extends WP_Widget {
 				'title'=>$title,
 				'markup_style'=>$markup_style,
 				'title_wrapper'=>$title_wrapper,
-				'use_relative_time' => $use_relative_time
+				'use_relative_time' => $use_relative_time,
+				'comments_per_thread' => $comments_per_thread
 			);
 
 			$style_params = apply_filters( 'disqus_rcw_style_parameters' , $style_params );
@@ -80,7 +87,7 @@ class disqus_recent_comments_widget extends WP_Widget {
 				"api_key" => $api_key,
 				"forum" => $forum_name,
 				"include" => "approved",
-				"limit" =>  $comment_limit * 3
+				"limit" =>  $comment_limit_req
 			);
 
 			$disqus_params = apply_filters( 'disqus_rcw_disqus_parameters' , $disqus_params );
@@ -365,6 +372,8 @@ class disqus_recent_comments_widget extends WP_Widget {
 
 		if($comment != 'Invalid API key') {
 
+			$thread_counters = array();
+
 			foreach($comment as $comment_obj) {
 				// first skip to next if user is filtered
 				$author_name = $comment_obj["author"]["name"];
@@ -372,6 +381,22 @@ class disqus_recent_comments_widget extends WP_Widget {
 					array_walk( $filtered_users, array( $this , 'disqus_rcw_trim' ) );
 					if( in_array( $author_name , $filtered_users ) ) continue;
 				}
+
+				$comments_per_thread = $style_params["comments_per_thread"];
+				$author_name .= $comments_per_thread;
+				if ($comments_per_thread > 0) {
+					$thread_id = $comment_obj["thread"];
+					if (isset($thread_counters[$thread_id])) {
+						if ($thread_counters[$thread_id] >= $comments_per_thread) {
+							continue;
+						} else {
+							$thread_counters[$thread_id] += 1;
+						}
+					} else {
+						$thread_counters[$thread_id] = 1;
+					}
+				}
+
 				//everything is fine, let's keep going
 				$comment_counter++;
 
@@ -492,6 +517,8 @@ class disqus_recent_comments_widget extends WP_Widget {
 		$instance['filter_users'] = strip_tags($new_instance['filter_users']);
 		$instance['title'] = strip_tags($new_instance['title']);
 		$instance['relative_time'] = strip_tags($new_instance['relative_time']);
+		$instance['comment_limit_req'] = strip_tags($new_instance['comment_limit_req']);
+		$instance['comments_per_thread'] = strip_tags($new_instance['comments_per_thread']);
 
 		return $instance;
 
@@ -509,6 +536,8 @@ class disqus_recent_comments_widget extends WP_Widget {
 		$filter_users = isset($instance['filter_users']) ? esc_attr($instance['filter_users']) : '';
 		$title = isset($instance['title']) ? esc_attr($instance['title']) : '';
 		$relative_time = ($instance['relative_time'] == 1) ? 1 : 0;
+		$comment_limit_req = isset($instance['comment_limit_req']) ? esc_attr($instance['comment_limit_req']) : 15;
+		$comments_per_thread = isset($instance['comments_per_thread']) ? esc_attr($instance['comments_per_thread']) : 0;
 
 		?>
 
@@ -525,6 +554,12 @@ class disqus_recent_comments_widget extends WP_Widget {
 
 		<p><label for="<?php echo $this->get_field_id('filter_users'); ?>"><?php _e( 'Filter Users (comma separated):', 'disqus_rcw' ); ?></label>
 			<textarea id="<?php echo $this->get_field_id('filter_users'); ?>" cols="30" name="<?php echo $this->get_field_name('filter_users'); ?>" type="text" ><?php echo $filter_users; ?></textarea></p>
+
+		<p><label for="<?php echo $this->get_field_id('comment_limit_req'); ?>"><?php _e( 'Comments retrieved from disqus:', 'disqus_rcw' ); ?></label>
+			<input id="<?php echo $this->get_field_id('comment_limit_req'); ?>" name="<?php echo $this->get_field_name('comment_limit_req'); ?>" type="text" value="<?php echo $comment_limit_req; ?>" /></p>
+
+		<p><label for="<?php echo $this->get_field_id('comments_per_thread'); ?>"><?php _e( 'Max number of comments from the same thread:', 'disqus_rcw' ); ?></label>
+			<input id="<?php echo $this->get_field_id('comments_per_thread'); ?>" name="<?php echo $this->get_field_name('comments_per_thread'); ?>" type="text" value="<?php echo $comments_per_thread; ?>" /></p>
 
 	<?php
 
